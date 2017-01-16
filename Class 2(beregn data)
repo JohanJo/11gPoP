@@ -9,11 +9,10 @@ let Lat1=0.0044
 let Rad1=0.983281670434
 let deg2rad deg =
   deg * (System.Math.PI / 180.0)
-// først position
 let x0 = Rad0 * cos(deg2rad Lat0) * cos(deg2rad Lon0)
 let y0 = Rad0 * cos(deg2rad Lat0) * sin(deg2rad Lon0)
 let z0 = Rad0 * sin(deg2rad Lat0)
-// anden positiion
+
 let x1 = Rad1 * cos(deg2rad Lat1) * cos(deg2rad Lon1)
 let y1 = Rad1 * cos(deg2rad Lat1) * sin(deg2rad Lon1)
 let z1 = Rad1 * sin(deg2rad Lat1)
@@ -21,7 +20,7 @@ let z1 = Rad1 * sin(deg2rad Lat1)
 let ax0 = - GMsol / (Rad0 * Rad0 * Rad0) * x0
 let ay0 = - GMsol / (Rad0 * Rad0 * Rad0) * y0
 let az0 = - GMsol / (Rad0 * Rad0 * Rad0) * z0
-                    //hastigheden fundet ved brug af de to positioner
+                    //hastigheden fundet ved at gange de to positioner
 let vx0 = (x1 - x0) / (deltaT)
 let vy0 = (y1 - y0) / (deltaT)
 let vz0 = (z1 - z0) / (deltaT)
@@ -29,7 +28,7 @@ let vz0 = (z1 - z0) / (deltaT)
 let rx0 = x0
 let ry0 = y0
 let rz0 = z0
-                    //ny position fundet med vores hastighed * med vores tid (1dag)
+                    //ny position fundet med vores hastighed + 1 dag
 let rx1 = rx0 + vx0 * deltaT
 let ry1 = ry0 + vy0 * deltaT
 let rz1 = rz0 + vz0 * deltaT
@@ -41,33 +40,29 @@ let vz1 = vz0 + az0 * deltaT
 let ax1 = - GMsol / (Rad1 * Rad1 * Rad1) * rx1
 let ay1 = - GMsol / (Rad1 * Rad1 * Rad1) * ry1
 let az1 = - GMsol / (Rad1 * Rad1 * Rad1) * rz1
-printfn "rx1=%f" rx1
-printfn "x1=%f" x1
-//vi kan se at de to punkter er det samme dvs. at formlerne virker
-//og nu hvor vi kender acceleration og hastigheden burde vi kunne finde den næste og den næste.
-//alt det der kommer nedenunder er mine test
-(*let mutable rx = rx1 + vx1 + deltaT
-let mutable ry = ry1 + vy1 + deltaT
-let mutable rz = rz1 + vz1 + deltaT
-let r1sim = decimal (sqrt(float (rx1*rx1+ry1*ry1+rz1*rz1)))
+printfn "rz1=%f" ry1
+printfn "z1=%f" y1
+let mutable rx = rx1 + vx1 * deltaT
+let mutable ry = ry1 + vy1 * deltaT
+let mutable rz = rz1 + vz1 * deltaT
+let mutable rsim = sqrt(rx1*rx1+ry1*ry1+rz1*rz1)
+let mutable ax = - GMsol / (rsim * rsim * rsim) * rx
+let mutable ay = - GMsol / (rsim * rsim * rsim) * ry
+let mutable az = - GMsol / (rsim * rsim * rsim) * rz
 let mutable vx = vx1 + ax1 * deltaT
 let mutable vy = vy1 + ay1 * deltaT
 let mutable vz = vz1 + az1 * deltaT
-*)
-//let mutable ax = ax1
-//for i in 1 .. 300 do
-
-//  vx <- vx + ax * deltaT
-  //vy <- vy + ay * deltaT
-  //vz <- vz + az * deltaT
-(*
-  ax <- GMsol / (Rad1 * Rad1 * Rad1) * rx
-  ay <- GMsol / (Rad1 * Rad1 * Rad1) * ry
-  az <- GMsol / (Rad1 * Rad1 * Rad1) * rz
+;
+for i in 1 .. 365 do
+  printfn "%f" ry
+  ax <- - GMsol / (rsim * rsim * rsim) * rx
+  ay <- - GMsol / (rsim * rsim * rsim) * ry
+  az <- - GMsol / (rsim * rsim * rsim) * rz
+  vx <- vx + ax * deltaT
+  vy <- vy + ay * deltaT
+  vz <- vz + az * deltaT
   rx <- rx + vx * deltaT
   ry <- ry + vy * deltaT
   rz <- rz + vz * deltaT
-  printfn "%f" rx
-  //printfn "%f" rx1
-  //printfn "%f" rx2
-*)
+  rsim <- sqrt(rx*rx+ry*ry+rz*rz)
+
