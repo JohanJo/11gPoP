@@ -21,7 +21,7 @@ let z1 = Rad1 * sin(deg2rad Lat1)
 let ax0 = - GMsol / (Rad0 * Rad0 * Rad0) * x0
 let ay0 = - GMsol / (Rad0 * Rad0 * Rad0) * y0
 let az0 = - GMsol / (Rad0 * Rad0 * Rad0) * z0
-                    //hastigheden fundet ved at gange de to positioner
+                    //hastigheden fundet ved brug af de to positioner
 let vx0 = (x1 - x0) / (deltaT)
 let vy0 = (y1 - y0) / (deltaT)
 let vz0 = (z1 - z0) / (deltaT)
@@ -29,7 +29,7 @@ let vz0 = (z1 - z0) / (deltaT)
 let rx0 = x0
 let ry0 = y0
 let rz0 = z0
-                    //ny position fundet med vores hastighed + 1 dag
+                    //ny position fundet med vores hastighed * med vores tid (1dag)
 let rx1 = rx0 + vx0 * deltaT
 let ry1 = ry0 + vy0 * deltaT
 let rz1 = rz0 + vz0 * deltaT
