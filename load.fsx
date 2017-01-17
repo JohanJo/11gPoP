@@ -10,46 +10,32 @@ let readLines (filename:string) = seq {
         yield reader.ReadLine ()
 }
 
-let data = readLines filename
+let tmp = readLines filename
 
-let data1 = Seq.toList data
+let mutable data = Seq.toList tmp
 
 let mutable im1 = 0
 let mutable im2 = 0
 let m1 = "$$SOE"
 let m2 = "$$EOE"
 
-for i = 0 to data1.Length-1 do
-  if data1.[i] = m1 then
+for i = 0 to data.Length-1 do
+  if data.[i] = m1 then
     im1 <- i+1
-  elif data1.[i] = m2 then
+  elif data.[i] = m2 then
     im2 <- i-1
 
-printfn "%A" data1.[im1..im2]
+data <- data.[im1..im2]
 
-let splitlines = data1.Split ([|""|], System.StringSplitOptions.RemoveEmptyEntries)
-splitlines |>
-printfn "%A" 
-(**
-let im1 = 0
-let im2 = 0
+let noSpacesList = [||]
+//printfn "%A" data
 
-for i = 0 to i<data.length do
-  if linelist.[i] = m1 then
-    im1 <- i
-  elif lineList.[i] = m2 then
-    im2 <- i
+for i=0 to data.Length-1 do
+  noSpacesList.[i] <-  noSpacesList.[i] + data.[i]
 
-reader.close();
+let mutable splitlines = data.[1].Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries)
+printfn "%A\n" splitlines
+printfn "%s" "Ny test:"
 
-
-
-
-//NOTER
-
-//Huske at reverse lineList da vi conser
-while not reader.end do
-  let line = reader.line
-
-  lineList :: line
-**)
+printfn "%A" noSpacesList.[4]
+//printfn "%A" splitlines
