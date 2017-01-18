@@ -1,4 +1,5 @@
 open System
+open  System.IO
 open System.Windows.Forms
 open System.Drawing
 open Microsoft.FSharp.Control.CommonExtensions
@@ -101,29 +102,29 @@ let pluto = new planet(167.2515,14.4941,32.477005512413,167.2573 , 14.4950,32.47
 let saturn = new planet(348.0949,-2.0195,9.642289048356, 348.1276 ,-2.0204,9.641988764325)
 let uranus = new planet(167.2024,0.7721,18.285189312931, 167.2153 ,0.7721,18.285183922464)
 
-sun.SimPlanet (1000.0)
-earth.SimPlanet (1000.0)
-neptun.SimPlanet (1000.0)
-venus.SimPlanet (1000.0)
-saturn.SimPlanet (1000.0)
-mars.SimPlanet (1000.0)
-mercury.SimPlanet (1000.0)
-jupiter.SimPlanet (1000.0)
-pluto.SimPlanet (1000.0)
-uranus.SimPlanet (1000.0)
+sun.SimPlanet (365.0)
+earth.SimPlanet (365.0)
+neptun.SimPlanet (365.0)
+venus.SimPlanet (365.0)
+saturn.SimPlanet (365.0)
+mars.SimPlanet (365.0)
+mercury.SimPlanet (365.0)
+jupiter.SimPlanet (365.0)
+pluto.SimPlanet (365.0)
+uranus.SimPlanet (365.0)
 //printfn "%A" (earth.listpos)
 //printfn "%A" (earth.listpos.[365])
 
 ;;
 type Animation (listpos , listpos1, listpos2, listpos3,listpos4 , listpos5, listpos6, listpos7, listpos8, listpos9) = class
   let title = "Solarsystem"
-  let backColor = Color.White
-  let size = (1000, 600)
+  let backColor = Image.FromFile("Star_background.png")
+  let size = (800, 600)
   let mutable positions = List.append listpos9 (List.append listpos8 (List.append listpos7 (List.append listpos6 (List.append listpos5 (List.append listpos4 (List.append listpos3 (List.append listpos2 (List.append listpos1 listpos))))))))
   let createForm backColor (width, height) title draw =
     let win = new Form ()
     win.Text <- title
-    win.BackColor <- backColor
+    win.BackgroundImage <- backColor
     win.ClientSize <- Size (width, height)
     win.Paint.Add draw
     win
@@ -132,7 +133,7 @@ type Animation (listpos , listpos1, listpos2, listpos3,listpos4 , listpos5, list
       match elm with
       | {Position.x=x;Position.y=y;} ->
         let rect = new Rectangle (int(x) + 400, int(y) + 200, 10, 10)
-        let aBrush : SolidBrush = new SolidBrush (Color.Blue)
+        let aBrush : SolidBrush = new SolidBrush (Color.Ivory)
         e.Graphics.FillEllipse (aBrush ,int(x), int(y), 2 ,2)
     List.map drawPixel positions |> ignore
 
@@ -141,9 +142,46 @@ type Animation (listpos , listpos1, listpos2, listpos3,listpos4 , listpos5, list
   member this.create () =
     let win = createForm backColor size title drawPlanet
     positions <-  positions |> List.map (fun {Position.x=x;Position.y=y;Position.z=z} -> {Position.x=AU2Pixel(x); Position.y=AU2Pixel(y);Position.z=AU2Pixel(z)})
+    Application.EnableVisualStyles()
     Application.Run (win)
 //let win = createForm backgroundColor size title drawPoints
 end
+;;
+type Loader (filename:string, n:int)= class
+  let readLines (filename:string) = seq {
+      use reader = new StreamReader (filename)
+      while not reader.EndOfStream do
+          yield reader.ReadLine ()
+  }
+
+  let mutable im1 = 0
+  let mutable im2 = 0
+  let tmp = readLines filename
+  let mutable data = Seq.toList tmp
+  let m1 = "$$SOE"
+  let m2 = "$$EOE"
+
+  member this.Array = data
+
+  member this.printData =
+    for i = 0 to data.Length-1 do
+      if data.[i] = m1 then
+        im1 <- i+1
+      elif data.[i] = m2 then
+        im2 <- i-1
+    data <- data.[im1..im2]
+
+    let array = data
+                 |> List.map (fun e -> e.Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries))
+                 |> List.map (Array.map decimal)
+
+    //printfn "%s" "Hvor mange dage vil du have!??"
+    //let n = System.Convert.ToInt32(System.Console.ReadLine());
+
+    printfn "%A" array.[array.Length-n..array.Length-1]
+end
+;;
+
 //let path = [{x=1.0;y=1.0;z=1.0;};{x=20.0;y=20.0;z=20.0;}]
 let solardraw = new Animation (venus.listpos, neptun.listpos, earth.listpos, sun.listpos, mars.listpos, mercury.listpos, saturn.listpos, jupiter.listpos, pluto.listpos, uranus.listpos)
 //let earthdraw = new Animation (earth.listpos)
