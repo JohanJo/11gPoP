@@ -2,7 +2,6 @@ open System
 open System.IO
 
 let filename = "C:\Users\Jebiel\Documents\Opgave 11g\data\Earth.txt"
-//data.Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries)
 
 let readLines (filename:string) = seq {
     use reader = new StreamReader (filename)
@@ -26,16 +25,16 @@ for i = 0 to data.Length-1 do
     im2 <- i-1
 
 data <- data.[im1..im2]
-
-let noSpacesList = [||]
 //printfn "%A" data
 
-for i=0 to data.Length-1 do
-  noSpacesList.[i] <-  noSpacesList.[i] + data.[i]
+//for i=0 to data.Length-1 do
+//  noSpacesList.[i] <-  noSpacesList.[i] + data.[i]
 
-let mutable splitlines = data.[1].Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries)
-printfn "%A\n" splitlines
-printfn "%s" "Ny test:"
+let array = data
+             |> List.map (fun e -> e.Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries))
+             |> List.map (Array.map decimal)
 
-printfn "%A" noSpacesList.[4]
-//printfn "%A" splitlines
+printfn "%s" "Hvor mange dage vil du have!??"
+let n = System.Convert.ToInt32(System.Console.ReadLine());
+
+printfn "%A" array.[array.Length-n..array.Length-1]
