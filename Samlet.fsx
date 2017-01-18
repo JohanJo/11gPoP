@@ -4,6 +4,11 @@ open System.Windows.Forms
 open System.Drawing
 open Microsoft.FSharp.Control.CommonExtensions
 
+// dialog
+printfn "Please choose how many days to simulate"
+let daysInt = Console.ReadLine() |> int32
+let days = daysInt |> float
+
 type Loader (filename:string, n:int)= class
   let readLines (filename:string) = seq {
       use reader = new StreamReader (filename)
@@ -41,23 +46,23 @@ type Loader (filename:string, n:int)= class
 end
 
 // load filerne med positionsdata
-let mercuryData = new Loader("data/Mercury.txt", 5)
+let mercuryData = new Loader("data/Mercury.txt", daysInt)
 mercuryData.pData
-let venusData = new Loader("data/Venus.txt", 5)
+let venusData = new Loader("data/Venus.txt", daysInt)
 venusData.pData
-let earthData = new Loader("data/Earth.txt", 5)
+let earthData = new Loader("data/Earth.txt", daysInt)
 earthData.pData
-let marsData = new Loader("data/Mars.txt", 5)
+let marsData = new Loader("data/Mars.txt", daysInt)
 marsData.pData
-let saturnData = new Loader("data/Saturn.txt", 5)
+let saturnData = new Loader("data/Saturn.txt", daysInt)
 saturnData.pData
-let uranusData = new Loader("data/Uranus.txt", 5)
+let uranusData = new Loader("data/Uranus.txt", daysInt)
 uranusData.pData
-let jupiterData = new Loader("data/Jupiter.txt", 5)
+let jupiterData = new Loader("data/Jupiter.txt", daysInt)
 jupiterData.pData
-let neptuneData = new Loader("data/Neptune.txt", 5)
+let neptuneData = new Loader("data/Neptune.txt", daysInt)
 neptuneData.pData
-let plutoData = new Loader("data/Pluto.txt", 5)
+let plutoData = new Loader("data/Pluto.txt", daysInt)
 plutoData.pData
 
 
@@ -162,16 +167,16 @@ let saturn = new planet(saturnData.lon0, saturnData.lat0, saturnData.rad0, satur
 let uranus = new planet(uranusData.lon0, uranusData.lat0, uranusData.rad0, uranusData.lon1, uranusData.lat1, uranusData.rad1)
 
 // simuler planeter
-sun.SimPlanet (365.0)
-earth.SimPlanet (365.0)
-neptune.SimPlanet (365.0)
-venus.SimPlanet (365.0)
-saturn.SimPlanet (365.0)
-mars.SimPlanet (365.0)
-mercury.SimPlanet (365.0)
-jupiter.SimPlanet (365.0)
-pluto.SimPlanet (365.0)
-uranus.SimPlanet (365.0)
+sun.SimPlanet (days)
+earth.SimPlanet (days)
+neptune.SimPlanet (days)
+venus.SimPlanet (days)
+saturn.SimPlanet (days)
+mars.SimPlanet (days)
+mercury.SimPlanet (days)
+jupiter.SimPlanet (days)
+pluto.SimPlanet (days)
+uranus.SimPlanet (days)
 
 ;;
 type Animation (listpos , listpos1, listpos2, listpos3,listpos4 , listpos5, listpos6, listpos7, listpos8, listpos9) = class
