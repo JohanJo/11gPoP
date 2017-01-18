@@ -1,10 +1,18 @@
+open System
+open System.Windows.Forms
+open System.Drawing
+open Microsoft.FSharp.Control.CommonExtensions
+
 let G = 67384e-11
 let GMsol = 2.959122082322128e-4
 let deltaT = 1.0
-
+let AU = float(1495978707)
 let deg2rad deg =
   deg * (System.Math.PI / 180.0)
 type Position = {mutable x : float; mutable y : float; mutable z : float}
+type Brush = Color * int
+//type Point = float * float
+//type Coordinate = {mutable x : float; mutable y : float;}
 type planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
       //startposition
       let x0 = Rad0 * cos(deg2rad Lat0) * cos(deg2rad Lon0)
@@ -83,6 +91,53 @@ type planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
           dag <- dag + deltaT
     end
 let earth = new planet(100.6001, 0.0044, 0.983295949009, 101.6192, 0.0044 ,0.983281670434)
+let sun = new planet(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+let neptun = new planet(230.5130,1.7494,30.322768010002, 230.5189,1.7494,30.322769025525)
+let venus = new planet(85.3426,0.5062,0.719928085839,86.9574,0.6007,0.719830023242)
+//sun.SimPlanet (1000.0)
 earth.SimPlanet (365.0)
-printfn "%A" (earth.listpos.[0])
-printfn "%A" (earth.listpos.[365])
+neptun.SimPlanet (365.0)
+venus.SimPlanet (365.0)
+//printfn "%A" (earth.listpos)
+//printfn "%A" (earth.listpos.[365])
+
+;;
+type Animation (listpos) = class
+  //inherit planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1)
+  let title = "Solarsystem"
+  let backColor = Color.White
+  let size = (800, 400)
+  let mutable positions = listpos
+  let createForm backColor (width, height) title draw =
+    let win = new Form ()
+    win.Text <- title
+    win.BackColor <- backColor
+    win.ClientSize <- Size (width, height)
+    win.Paint.Add draw
+    win
+  let drawPlanet (e : PaintEventArgs) =
+    let drawPixel (elm : Position) =
+      match elm with
+      | {Position.x=x;Position.y=y;} ->
+        let rect = new Rectangle (int(x) + 400, int(y) + 200, 10, 10)
+        let aBrush : SolidBrush = new SolidBrush (Color.Blue)
+        e.Graphics.FillEllipse (aBrush ,int(x), int(y), 5 ,5)
+    List.map drawPixel positions |> ignore
+
+  let AU2Pixel (AU:float ) =
+    (float (fst size) / (2.0*33.0)) * AU + (float(fst size) / 2.0)
+  member this.create () =
+    let win = createForm backColor size title drawPlanet
+    positions <-  listpos |> List.map (fun {Position.x=x;Position.y=y;Position.z=z} -> {Position.x=AU2Pixel(x); Position.y=AU2Pixel(y);Position.z=AU2Pixel(z)})
+    Application.Run (win)
+
+//let win = createForm backgroundColor size title drawPoints
+end
+//let path = [{x=1.0;y=1.0;z=1.0;};{x=20.0;y=20.0;z=20.0;}]
+let venusdraw = new Animation (venus.listpos)
+//let earthdraw = new Animation (earth.listpos)
+//let neptundraw = new Animation (earth.listpos)
+
+venusdraw.create()
+//earthdraw.create()
+//neptundraw.create()
