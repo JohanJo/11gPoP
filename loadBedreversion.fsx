@@ -14,8 +14,9 @@ type Loader (filename:string, n:int)= class
   let mutable data = Seq.toList tmp
   let m1 = "$$SOE"
   let m2 = "$$EOE"
+  let mutable array = []
 
-  member this.Array = data
+  member this.Array = array
 
   member this.pData =
     for i = 0 to data.Length-1 do
@@ -24,33 +25,30 @@ type Loader (filename:string, n:int)= class
       elif data.[i] = m2 then
         im2 <- i-1
     data <- data.[im1..im2]
-
-    let mutable array = data
-                        |> List.map (fun e -> e.Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries))
-                        //|> List.map (Array.map decimal)
-
+    array <- data |> List.map (fun e -> e.Split ([|" "|], System.StringSplitOptions.RemoveEmptyEntries))
+    //|> List.map (Array.map decimal)
     //printfn "%s" "Hvor mange dage vil du have!??"
     //let n = System.Convert.ToInt32(System.Console.ReadLine());
 
     array <- array.[array.Length-n..array.Length-1]
     //(Array.get array.[0] 1)
     
-    let mutable lon0 = (Array.get array.[0] 1) |> float
-    let mutable lon1 = (Array.get array.[1] 1) |> float
-    let mutable lat0 = (Array.get array.[0] 2) |> float
-    let mutable lat1 = (Array.get array.[1] 2) |> float
-    let mutable rad0 = (Array.get array.[0] 3) |> float
-    let mutable rad1 = (Array.get array.[1] 3) |> float
-        
-    printfn "%A" lon0
-    printfn "%A" lon1
-    printfn "%A" lat0
-    printfn "%A" lat1
-    printfn "%A" rad0
-    printfn "%A" rad1
+  member this.lon0 = (Array.get array.[0] 1) |> decimal
+  member this.lon1 = (Array.get array.[1] 1) |> decimal
+  member this.lat0 = (Array.get array.[0] 2) |> decimal
+  member this.lat1 = (Array.get array.[1] 2) |> decimal
+  member this.rad0 = (Array.get array.[0] 3) |> decimal
+  member this.rad1 = (Array.get array.[1] 3) |> decimal
 end
 
 let dulle = new Loader("C:\Users\Jebiel\Documents\Opgave 11g\data\Earth.txt", 5)
 let mulle = new Loader("C:\Users\Jebiel\Documents\Opgave 11g\data\Venus.txt", 5)
 dulle.pData
-mulle.pData
+printfn "%A" dulle.Array
+printf "%A " dulle.lon0
+printf "%A " dulle.lon1
+printf "%A " dulle.lat0
+printf "%A " dulle.lat0
+printf "%A " dulle.rad0
+printf "%A " dulle.rad1
+
