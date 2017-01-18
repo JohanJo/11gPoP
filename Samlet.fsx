@@ -42,14 +42,23 @@ end
 
 // load filerne med positionsdata
 let mercuryData = new Loader("data/Mercury.txt", 5)
+mercuryData.pData
 let venusData = new Loader("data/Venus.txt", 5)
+venusData.pData
 let earthData = new Loader("data/Earth.txt", 5)
+earthData.pData
 let marsData = new Loader("data/Mars.txt", 5)
+marsData.pData
 let saturnData = new Loader("data/Saturn.txt", 5)
+saturnData.pData
 let uranusData = new Loader("data/Uranus.txt", 5)
+uranusData.pData
 let jupiterData = new Loader("data/Jupiter.txt", 5)
+jupiterData.pData
 let neptuneData = new Loader("data/Neptune.txt", 5)
+neptuneData.pData
 let plutoData = new Loader("data/Pluto.txt", 5)
+plutoData.pData
 
 
 let G = 67384e-11
@@ -140,27 +149,40 @@ type planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
       dag <- dag + deltaT
 end
 
-let earth = new planet(earthData.lon0, earthData.lat0, earthData.rad0, earthData.lon1, earthData.lat1 ,earthData.rad1)
+// opret objekter
+let earth = new planet(earthData.lon0, earthData.lat0, earthData.rad0, earthData.lon1, earthData.lat1, earthData.rad1)
 let sun = new planet(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-let neptun = new planet(230.5130,1.7494,30.322768010002, 230.5189,1.7494,30.322769025525)
-let venus = new planet(85.3426,0.5062,0.719928085839,86.9574,0.6007,0.719830023242)
-//sun.SimPlanet (1000.0)
-earth.SimPlanet (365.0)
-neptun.SimPlanet (365.0)
-venus.SimPlanet (365.0)
+let neptune = new planet(neptuneData.lon0, neptuneData.lat0, neptuneData.rad0, neptuneData.lon1, neptuneData.lat1, neptuneData.rad1)
+let venus = new planet(venusData.lon0, venusData.lat0, venusData.rad0, venusData.lon1, venusData.lat1, venusData.rad1)
+let jupiter = new planet(jupiterData.lon0, jupiterData.lat0, jupiterData.rad0, jupiterData.lon1, jupiterData.lat1, jupiterData.rad1)
+let mars = new planet(marsData.lon0, marsData.lat0, marsData.rad0, marsData.lon1, marsData.lat1, marsData.rad1)
+let mercury = new planet(mercuryData.lon0, mercuryData.lat0, mercuryData.rad0, mercuryData.lon1, mercuryData.lat1, mercuryData.rad1)
+let pluto = new planet(plutoData.lon0, plutoData.lat0, plutoData.rad0, plutoData.lon1, plutoData.lat1, plutoData.rad1)
+let saturn = new planet(saturnData.lon0, saturnData.lat0, saturnData.rad0, saturnData.lon1, saturnData.lat1, saturnData.rad1)
+let uranus = new planet(uranusData.lon0, uranusData.lat0, uranusData.rad0, uranusData.lon1, uranusData.lat1, uranusData.rad1)
 
+// simuler planeter
+sun.SimPlanet (365.0)
+earth.SimPlanet (365.0)
+neptune.SimPlanet (365.0)
+venus.SimPlanet (365.0)
+saturn.SimPlanet (365.0)
+mars.SimPlanet (365.0)
+mercury.SimPlanet (365.0)
+jupiter.SimPlanet (365.0)
+pluto.SimPlanet (365.0)
+uranus.SimPlanet (365.0)
 
 ;;
-type Animation (listpos) = class
-  //inherit planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1)
+type Animation (listpos , listpos1, listpos2, listpos3,listpos4 , listpos5, listpos6, listpos7, listpos8, listpos9) = class
   let title = "Solarsystem"
-  let backColor = Color.White
-  let size = (800, 400)
-  let mutable positions = listpos
+  let backColor = Image.FromFile("Star_background.png")
+  let size = (800, 600)
+  let mutable positions = List.append listpos9 (List.append listpos8 (List.append listpos7 (List.append listpos6 (List.append listpos5 (List.append listpos4 (List.append listpos3 (List.append listpos2 (List.append listpos1 listpos))))))))
   let createForm backColor (width, height) title draw =
     let win = new Form ()
     win.Text <- title
-    win.BackColor <- backColor
+    win.BackgroundImage <- backColor
     win.ClientSize <- Size (width, height)
     win.Paint.Add draw
     win
@@ -169,25 +191,21 @@ type Animation (listpos) = class
       match elm with
       | {Position.x=x;Position.y=y;} ->
         let rect = new Rectangle (int(x) + 400, int(y) + 200, 10, 10)
-        let aBrush : SolidBrush = new SolidBrush (Color.Blue)
-        e.Graphics.FillEllipse (aBrush ,int(x), int(y), 5 ,5)
+        let aBrush : SolidBrush = new SolidBrush (Color.Gold)
+        e.Graphics.FillEllipse (aBrush ,int(x), int(y), 2 ,2)
     List.map drawPixel positions |> ignore
 
   let AU2Pixel (AU:float ) =
     (float (fst size) / (2.0*33.0)) * AU + (float(fst size) / 2.0)
   member this.create () =
     let win = createForm backColor size title drawPlanet
-    positions <-  listpos |> List.map (fun {Position.x=x;Position.y=y;Position.z=z} -> {Position.x=AU2Pixel(x); Position.y=AU2Pixel(y);Position.z=AU2Pixel(z)})
-    Application.EnableVisualStyles ()
+    positions <-  positions |> List.map (fun {Position.x=x;Position.y=y;Position.z=z} -> {Position.x=AU2Pixel(x); Position.y=AU2Pixel(y);Position.z=AU2Pixel(z)})
+    Application.EnableVisualStyles()
     Application.Run (win)
 
-//let win = createForm backgroundColor size title drawPoints
 end
-//let path = [{x=1.0;y=1.0;z=1.0;};{x=20.0;y=20.0;z=20.0;}]
-let venusdraw = new Animation (venus.listpos)
-//let earthdraw = new Animation (earth.listpos)
-//let neptundraw = new Animation (earth.listpos)
 
-venusdraw.create()
-//earthdraw.create()
-//neptundraw.create()
+
+let solardraw = new Animation (venus.listpos, neptune.listpos, earth.listpos, sun.listpos, mars.listpos, mercury.listpos, saturn.listpos, jupiter.listpos, pluto.listpos, uranus.listpos)
+
+solardraw.create()
