@@ -5,9 +5,27 @@ open System.Drawing
 open Microsoft.FSharp.Control.CommonExtensions
 
 // dialog
-printfn "Please choose how many days to simulate"
-let daysInt = Console.ReadLine() |> int32
-let days = daysInt |> float
+//printfn "Please choose how many days to simulate"
+let mutable daysInt = 0
+let mutable days = 0.0
+
+let form = new Form()
+ 
+let label = new Label(Text = "Hvor mange dage vil du simulere.", Dock = DockStyle.Top)
+form.Controls.Add(label)
+
+let textBox = new TextBox(Left = 50, Top=50, Width=50)
+form.Controls.Add(textBox)
+ 
+let button = new Button(Text = "Start Simulering!", Dock = DockStyle.Bottom)
+button.Click.Add(fun _ ->
+    //Her skal den istedet sætte n(dage)
+    daysInt <- textBox.Text |> int32
+    days <- textBox.Text |> float
+    form.Close())
+form.Controls.Add(button)
+ 
+Application.Run(form)
 
 type Loader (filename:string, n:int)= class
   let readLines (filename:string) = seq {
