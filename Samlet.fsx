@@ -9,12 +9,12 @@ open Microsoft.FSharp.Control.CommonExtensions
 let mutable daysInt = 0
 let mutable days = 0.0
 
-let form = new Form()
+let form = new Form(Width=150, Height=250)
  
-let label = new Label(Text = "Hvor mange dage vil du simulere.", Dock = DockStyle.Top)
+let label = new Label(Text = "Hvor mange dage vil du simulere.", Dock = DockStyle.Top, Left=130)
 form.Controls.Add(label)
 
-let textBox = new TextBox(Left = 50, Top=50, Width=50)
+let textBox = new TextBox(Left = 110, Top=50, Width=50)
 form.Controls.Add(textBox)
  
 let button = new Button(Text = "Start Simulering!", Dock = DockStyle.Bottom)
