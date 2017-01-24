@@ -94,9 +94,9 @@ type Position = {mutable x : float; mutable y : float; mutable z : float}
 type Brush = Color * int
 //type Point = float * float
 //type Coordinate = {mutable x : float; mutable y : float;}
+let rnd = new Random()
 type Planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
-  let rnd = new Random()
-  let Color = rnd.Next(256), rnd.Next(256), rnd.Next(256)
+  let myBrush = new SolidBrush(Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256)))
   //startposition
   let x0 = Rad0 * cos(deg2rad Lat0) * cos(deg2rad Lon0)
   let y0 = Rad0 * cos(deg2rad Lat0) * sin(deg2rad Lon0)
@@ -149,8 +149,16 @@ type Planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
   //en tom liste til at indæstte planetens positioner
   let mutable _listpos = List.Empty
   //attributes
+  member this.r = rnd.Next(256)
+  member this.g = rnd.Next(256)
+  member this.b = rnd.Next(256)
+
+  member this.RandomColor = myBrush
+
   member this.AU2Pixel AU = (float (fst (800, 600)) / (2.0*33.0)) * AU + (float(fst (800, 600)) / 2.0)
+
   member this.Pos2AUpos pos = {Position.x=this.AU2Pixel(pos.x); Position.y=this.AU2Pixel(pos.y);Position.z=this.AU2Pixel(pos.z)}
+
   member this.listpos = _listpos
   //methods
   //bevæger planeten
@@ -176,7 +184,6 @@ type Planet (Lon0, Lat0, Rad0, Lon1, Lat1, Rad1) = class
       dag <- dag + deltaT
 
   member this.GetAU2Pixels = this.listpos |> List.map (fun {Position.x=x;Position.y=y;Position.z=z} -> {Position.x=this.AU2Pixel(x); Position.y=this.AU2Pixel(y);Position.z=this.AU2Pixel(z)})
-
 end
 
 // opret objekter
@@ -192,6 +199,7 @@ let saturn = new Planet(saturnData.lon0, saturnData.lat0, saturnData.rad0, satur
 let uranus = new Planet(uranusData.lon0, uranusData.lat0, uranusData.rad0, uranusData.lon1, uranusData.lat1, uranusData.rad1)
 let planets =
   [earth; neptune; venus; jupiter; mars; mercury; pluto; saturn; uranus]
+List.map (fun (p : Planet)-> printfn "farve: %A" p.RandomColor.Color) planets
 // simuler planeter
 sun.SimPlanet (days)
 earth.SimPlanet (days)
@@ -203,8 +211,8 @@ mercury.SimPlanet (days)
 jupiter.SimPlanet (days)
 pluto.SimPlanet (days)
 uranus.SimPlanet (days)
-
 ;;
+
 type Animation (planets : List<Planet>) = class
   let title = "Milkyway"
   let backColor = Image.FromFile("Star_background.png")
@@ -217,13 +225,15 @@ type Animation (planets : List<Planet>) = class
     win.ClientSize <- Size (width, height)
     //List.map (fun (p : Planet) -> List.map (fun pos -> win.Paint.Add (fun (e : PaintEventArgs) -> draw (2, pos, e)))p.GetAU2Pixels) planets |> ignore
     for i in 0 .. days-1 do
-      List.map (fun (p : Planet) -> win.Paint.Add (fun (e : PaintEventArgs) -> draw (2, p.Pos2AUpos p.listpos.[i], e))) planets |> ignore
+      List.map (fun (p : Planet) -> win.Paint.Add (fun (e : PaintEventArgs) -> draw (p, p.Pos2AUpos p.listpos.[i], e, i))) planets |> ignore
     win
 
-  let drawUni (c : int, pos : Position, e : PaintEventArgs) =
-    printfn "x: %A y: %A" pos.x pos.y
-    System.Threading.Thread.Sleep(2)
-    e.Graphics.FillEllipse (Brushes.OrangeRed, int(pos.x), int(pos.y), 2 ,2)
+
+  let drawUni (p : Planet, pos : Position, e : PaintEventArgs, day : int) =
+    //For prolonged animation use Thread.Sleep(int)
+    //System.Threading.Thread.Sleep(2)
+    e.Graphics.FillEllipse(p.RandomColor, int(pos.x), int(pos.y), 2 ,2)
+    printfn "day %d of %d" day days
     //new Brush()
 
   member this.create() =
